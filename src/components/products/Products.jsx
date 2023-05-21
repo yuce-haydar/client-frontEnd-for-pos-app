@@ -1,103 +1,44 @@
-import React from 'react'
+import React, { useEffect, useState } from "react";
+import ProductItem from "./ProductItem";
+import { PlusOutlined, EditOutlined } from "@ant-design/icons";
+import Add from "./add";
+const Products = ({ categories }) => {
+  const [products, setProducts] = useState([]);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  useEffect(() => {
+    const getProducts = async () => {
+      const res = await fetch("http://localhost:5000/api/products/get-all");
+      const data = await res.json();
+      setProducts(data);
+      console.log(data);
+    };
+    getProducts();
+  }, []);
 
-const Products = () => {
   return (
+    <div className="productsWrapper  grid grid-cols-card gap-4 ">
+      {products.map((item) => (
+        <ProductItem item={item} key={item._id}/>
+      ))}
 
-        <div className="productsWrapper  grid grid-cols-card gap-4 ">
-            <div className="productsItem border w-28 hover:shadow-xl cursor-pointer select-none ">
-                <img className='h-28 border-b-2 object-cover w-full' src="https://www.pazarciismail.com/assets/img/cart/armut5.jpg" alt="" />
-          
-            <div className="productInfo flex flex-col">
-                <span className='font-bold'>Armut</span>
-                <span>15₺</span>
-            </div> 
-             </div>
-            <div className="productsItem border w-28 hover:shadow-xl cursor-pointer select-none ">
-                <img className='h-28 border-b-2 object-cover w-full' src="https://www.pazarciismail.com/assets/img/cart/armut5.jpg" alt="" />
-          
-            <div className="productInfo flex flex-col">
-                <span className='font-bold'>Armut</span>
-                <span>15₺</span>
-            </div> 
-             </div>
-            <div className="productsItem border w-28 hover:shadow-xl cursor-pointer select-none ">
-                <img className='h-28 border-b-2 object-cover w-full' src="https://www.pazarciismail.com/assets/img/cart/armut5.jpg" alt="" />
-          
-            <div className="productInfo flex flex-col">
-                <span className='font-bold'>Armut</span>
-                <span>15₺</span>
-            </div> 
-             </div>
-            <div className="productsItem border w-28 hover:shadow-xl cursor-pointer select-none ">
-                <img className='h-28 border-b-2 object-cover w-full' src="https://www.pazarciismail.com/assets/img/cart/armut5.jpg" alt="" />
-          
-            <div className="productInfo flex flex-col">
-                <span className='font-bold'>Armut</span>
-                <span>15₺</span>
-            </div> 
-             </div>
-            <div className="productsItem border w-28 hover:shadow-xl cursor-pointer select-none ">
-                <img className='h-28 border-b-2 object-cover w-full' src="https://www.pazarciismail.com/assets/img/cart/armut5.jpg" alt="" />
-          
-            <div className="productInfo flex flex-col">
-                <span className='font-bold'>Armut</span>
-                <span>15₺</span>
-            </div> 
-             </div>
-            <div className="productsItem border w-28 hover:shadow-xl cursor-pointer select-none ">
-                <img className='h-28 border-b-2 object-cover w-full' src="https://www.pazarciismail.com/assets/img/cart/armut5.jpg" alt="" />
-          
-            <div className="productInfo flex flex-col">
-                <span className='font-bold'>Armut</span>
-                <span>15₺</span>
-            </div> 
-             </div>
-            <div className="productsItem border w-28 hover:shadow-xl cursor-pointer select-none ">
-                <img className='h-28 border-b-2 object-cover w-full' src="https://www.pazarciismail.com/assets/img/cart/armut5.jpg" alt="" />
-          
-            <div className="productInfo flex flex-col">
-                <span className='font-bold'>Armut</span>
-                <span>15₺</span>
-            </div> 
-             </div>
-            <div className="productsItem border w-28 hover:shadow-xl cursor-pointer select-none ">
-                <img className='h-28 border-b-2 object-cover w-full' src="https://www.pazarciismail.com/assets/img/cart/armut5.jpg" alt="" />
-          
-            <div className="productInfo flex flex-col">
-                <span className='font-bold'>Armut</span>
-                <span>15₺</span>
-            </div> 
-             </div>
-            <div className="productsItem border w-28 hover:shadow-xl cursor-pointer select-none ">
-                <img className='h-28 border-b-2 object-cover w-full' src="https://www.pazarciismail.com/assets/img/cart/armut5.jpg" alt="" />
-          
-            <div className="productInfo flex flex-col">
-                <span className='font-bold'>Armut</span>
-                <span>15₺</span>
-            </div> 
-             </div>
-            <div className="productsItem border w-28 hover:shadow-xl cursor-pointer select-none ">
-                <img className='h-28 border-b-2 object-cover w-full' src="https://www.pazarciismail.com/assets/img/cart/armut5.jpg" alt="" />
-          
-            <div className="productInfo flex flex-col">
-                <span className='font-bold'>Armut</span>
-                <span>15₺</span>
-            </div> 
-             </div>
-            <div className="productsItem border w-28 hover:shadow-xl cursor-pointer select-none ">
-                <img className='h-28 border-b-2 object-cover w-full' src="https://www.pazarciismail.com/assets/img/cart/armut5.jpg" alt="" />
-          
-            <div className="productInfo flex flex-col">
-                <span className='font-bold'>Armut</span>
-                <span>15₺</span>
-            </div> 
-             </div>
-         
-        </div>
-        
+<div
+        className="product-item border hover:shadow-lg cursor-pointer transition-all select-none bg-purple-800 flex justify-center items-center hover:opacity-90"
+        onClick={() => setIsAddModalOpen(true)}
+      >
+        <PlusOutlined className="text-white md:text-2xl" />
+      </div>
+      <div className="product-item border hover:shadow-lg cursor-pointer transition-all select-none bg-orange-800 flex justify-center items-center hover:opacity-90">
+        <EditOutlined className="text-white md:text-2xl" />
+      </div>
+        <Add
+        isAddModalOpen={isAddModalOpen}
+        setIsAddModalOpen={setIsAddModalOpen}
+        categories={categories}
+        products={products}
+        setProducts={setProducts}
+      />
+    </div>
+  );
+};
 
-    
-  )
-}
-
-export default Products
+export default Products;
