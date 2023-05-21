@@ -63,7 +63,7 @@ const Add = ({
         </Form.Item>
 
         <Form.Item
-          name="categories"
+          name="category"
           label="kategori sec"
           rules={[{ required: true, message: "Kategori secme Alanı Boş Geçilemez!" }]}
         >
