@@ -11,11 +11,12 @@ import {
   message,
 } from "antd";
 
-const Edit = ({ categories }) => {
+const Edit = () => {
   const [products, setProducts] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingModal, setEditingModal] = useState({});
-
+  const [editingItem, setEditingItem] = useState({});
+  const [categories, setCategories] = useState([]);
+  const [form] = Form.useForm();
   const showModal = () => {
     setIsModalOpen(true);
   };
@@ -23,38 +24,77 @@ const Edit = ({ categories }) => {
     setIsModalOpen(false);
   };
   const handleCancel = () => {
+    console.log(editingItem);
     setIsModalOpen(false);
   };
 
   useEffect(() => {
-    const getProducts = async () => {
-      const res = await fetch("http://localhost:5000/api/products/get-all");
-      const data = await res.json();
-      setProducts(data);
-      console.log(data);
+    const getCategories = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/api/categories/get-all");
+        const data = await res.json();
+        data &&
+          setCategories(
+            data.map((item) => {
+              return { ...item, value: item.title };
+            })
+          );
+      } catch (error) {
+        console.log(error);
+      }
     };
+
+    getCategories();
+  }, []);
+
+  useEffect(() => {
+    const getProducts = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/api/products/get-all");
+        const data = await res.json();
+        data && setProducts(data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
     getProducts();
   }, []);
 
-  const [form] = Form.useForm();
+  const handleDelete = (id) => {
+    try {
+      if (window.confirm("silmek istedigiinze emin misiniz ")) {
+        fetch("http://localhost:5000/api/products/delete-product", {
+          method: "DELETE",
+          body: JSON.stringify({ productId: id }),
+          headers: { "Content-type": "application/json; charset=UTF-8" },
+        });
+        message.success("urun  başarıyla silindi.");
+
+        setProducts(products.filter((item) => item._id !== id));
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const onFinish = (values) => {
     try {
-      fetch("http://localhost:5000/api/products/add-product", {
-        method: "POST",
-        body: JSON.stringify(values),
+      fetch("http://localhost:5000/api/products/update-product", {
+        method: "PUT",
+        body: JSON.stringify({ ...values, productId: editingItem._id }),
         headers: { "Content-type": "application/json; charset=UTF-8" },
       });
-      message.success("Kategori başarıyla eklendi.");
+      message.success("urun  başarıyla guncellendi.");
       form.resetFields();
-      setProducts([
-        ...products,
-        {
-          ...values,
-          _id: Math.random(),
-          price: Number(values.price),
-        },
-      ]);
+      setProducts(
+        products.map((item) => {
+          if (item._id === editingItem._id) {
+            return values;
+          }
+          return item;
+        })
+      );
     } catch (error) {
       console.log(error);
     }
@@ -94,17 +134,34 @@ const Edit = ({ categories }) => {
       key: "action",
       render: (_, record) => (
         <Space size="middle">
-          <Button className="text-blue-600" onClick={()=>{
-            setIsModalOpen(true)
-            setEditingModal(record)
-          }}>
+          <Button
+            className="text-blue-600"
+            onClick={() => {
+              setEditingItem(record);
+              setIsModalOpen(true);
+            }}
+          >
             Edit{" "}
           </Button>
-          <a className="text-red-900 hover:text-green-800">Delete</a>
+          <Button
+            className="text-red-900 hover:text-green-800"
+            onClick={() => {
+              handleDelete(record._id);
+            }}
+          >
+            Delete
+          </Button>
         </Space>
       ),
     },
   ];
+  useEffect(() => {
+    if (isModalOpen) {
+      form.setFieldsValue(editingItem);
+    } else {
+      form.resetFields();
+    }
+  }, [isModalOpen, editingItem, form]);
 
   return (
     <>
@@ -115,8 +172,14 @@ const Edit = ({ categories }) => {
         onOk={handleOk}
         onCancel={handleCancel}
         footer={false}
+        maskClosable={true}
       >
-        <Form layout="vertical" onFinish={onFinish} form={form}>
+        <Form
+          layout="vertical"
+          onFinish={onFinish}
+          form={form}
+          initialValues={setEditingItem}
+        >
           <Form.Item
             name="title"
             label="urun Ekle"
@@ -166,7 +229,7 @@ const Edit = ({ categories }) => {
           </Form.Item>
           <Form.Item className="flex justify-end mb-0">
             <Button type="primary" htmlType="submit">
-              Oluştur
+              guncelle
             </Button>
           </Form.Item>
         </Form>
