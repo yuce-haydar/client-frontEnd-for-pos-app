@@ -5,24 +5,26 @@ const Add = ({
   isAddModalOpen,
   setIsAddModalOpen,
   categories,
-  setCategories,
+  setProducts,
+  products
 }) => {
   const [form] = Form.useForm();
 
   const onFinish = (values) => {
     try {
-      fetch("http://localhost:5000/api/categories/add-category", {
+      fetch("http://localhost:5000/api/products/add-product", {
         method: "POST",
         body: JSON.stringify(values),
         headers: { "Content-type": "application/json; charset=UTF-8" },
       });
       message.success("Kategori başarıyla eklendi.");
       form.resetFields();
-      setCategories([
-        ...categories,
+      setProducts([
+        ...products,
         {
+          ...values,
           _id: Math.random(),
-          title: values.title,
+          price: Number(values.price),
         },
       ]);
     } catch (error) {
@@ -78,32 +80,7 @@ const Add = ({
                 .toLowerCase()
                 .localeCompare((optionB?.title ?? "").toLowerCase())
             }
-            options={[
-              {
-                value: "1",
-                label: "Not Identified",
-              },
-              {
-                value: "2",
-                label: "Closed",
-              },
-              {
-                value: "3",
-                label: "Communicated",
-              },
-              {
-                value: "4",
-                label: "Identified",
-              },
-              {
-                value: "5",
-                label: "Resolved",
-              },
-              {
-                value: "6",
-                label: "Cancelled",
-              },
-            ]}
+            options={categories}
           />
         </Form.Item>
         <Form.Item className="flex justify-end mb-0">
