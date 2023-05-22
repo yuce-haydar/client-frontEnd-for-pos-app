@@ -1,11 +1,13 @@
 import { PlusOutlined, EditOutlined } from "@ant-design/icons";
 import { addProduct } from "../../redux/cartSlice";
 import { useDispatch,useSelector } from "react-redux";
+import { message } from "antd";
 
 const ProductItem = ({item}) => {
   const dispatch=useDispatch()
   const handleClick=()=>{
    dispatch(addProduct({...item,quantity:1,imza:'haydar'}))
+   message.success("urun sepete eklendi")
   }
   return (
     <>
